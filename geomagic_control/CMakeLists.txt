@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tapi_geomagic_control)
 
+# Qt
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
