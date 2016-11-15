@@ -1,4 +1,4 @@
-phantom_omni
+tapi_geomagic_touch
 ============
 
 ROS Node for Geomagic Touch ethernet devices.

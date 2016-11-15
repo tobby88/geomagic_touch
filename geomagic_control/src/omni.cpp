@@ -13,8 +13,8 @@
 #include <HDU/hduVector.h>
 #include <HDU/hduMatrix.h>
 
-#include "geomagic_control/PhantomButtonEvent.h"
-#include "geomagic_control/OmniFeedback.h"
+#include "tapi_geomagic_control/PhantomButtonEvent.h"
+#include "tapi_geomagic_control/OmniFeedback.h"
 #include <pthread.h>
 
 int calibrationStyle;
@@ -33,7 +33,7 @@ struct OmniState {
 	hduVector3Dd rot;
 	hduVector3Dd joints;
 	hduVector3Dd force;   //3 element double vector force[0], force[1], force[2]
-	float thetas[7];
+	double thetas[7];
 	int buttons[2];
 	int buttons_prev[2];
 	bool lock;
@@ -66,7 +66,7 @@ public:
 		// Publish button state on NAME_button.
 		std::ostringstream button_topic;
 		button_topic << omni_name << "_button";
-		button_pub = n.advertise<geomagic_control::PhantomButtonEvent>(button_topic.str(), 100);
+		button_pub = n.advertise<tapi_geomagic_control::PhantomButtonEvent>(button_topic.str(), 100);
 
 		// Subscribe to NAME_force_feedback.
 		std::ostringstream force_feedback_topic;
@@ -97,7 +97,7 @@ public:
 	/*******************************************************************************
 	 ROS node callback.
 	 *******************************************************************************/
-	void force_callback(const geomagic_control::OmniFeedbackConstPtr& omnifeed) {
+	void force_callback(const tapi_geomagic_control::OmniFeedbackConstPtr& omnifeed) {
 		////////////////////Some people might not like this extra damping, but it
 		////////////////////helps to stabilize the overall force feedback. It isn't
 		////////////////////like we are getting direct impedance matching from the
@@ -137,7 +137,7 @@ public:
 					and (state->buttons[0] == 1)) {
 				state->lock = !(state->lock);
 			}
-			geomagic_control::PhantomButtonEvent button_event;
+			tapi_geomagic_control::PhantomButtonEvent button_event;
 			button_event.grey_button = state->buttons[0];
 			button_event.white_button = state->buttons[1];
 			state->buttons_prev[0] = state->buttons[0];
@@ -196,7 +196,7 @@ HDCallbackCode HDCALLBACK omni_state_callback(void *pUserData) {
 			return HD_CALLBACK_DONE;
 	}
 
-	float t[7] = { 0., omni_state->joints[0], omni_state->joints[1],
+	double t[7] = { 0., omni_state->joints[0], omni_state->joints[1],
 			omni_state->joints[2] - omni_state->joints[1], omni_state->rot[0],
 			omni_state->rot[1], omni_state->rot[2] };
 	for (int i = 0; i < 7; i++)
@@ -257,7 +257,7 @@ void *ros_publish(void *ptr) {
 }
 
 int main(int argc, char** argv) {
-	ros::init(argc, argv, "geomagic_control_node");
+	ros::init(argc, argv, "tapi_geomagic_control");
 	ros::NodeHandle nh("~");
 	std::string device_name="";
 	nh.getParam("device_name", device_name);

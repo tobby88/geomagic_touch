@@ -1,36 +1,31 @@
-<package>
-  <name>geomagic_control</name>
-  <version>1.0.0</version>
+<?xml version="1.0"?>
+<package format="2">
+  <name>tapi_geomagic_control</name>
+  <version>1.1.0</version>
   <description>
      ROS Node for Geomagic devices.
   </description>
   <maintainer email="sb@generationrobots.com">Sven Bock</maintainer>
+  <maintainer email="tobby@tobby.eu">tobby</maintainer>
   <author>Hai Nguyen, Marc Killpack, Chi-Hung King, Advisor: Prof. Charlie Kemp, Lab: Healthcare Robotics Lab at Georgia Tech</author>
+  <author email="tobby@tobby.eu">tobby</author>
   <license>new BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>genmsg</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>tf</build_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <depend>rospy</depend>
+  <depend>tf</depend>
   <build_depend>openhaptics-ae</build_depend>
-  <build_depend>rosconsole</build_depend>
-  <build_depend>urdf</build_depend>
-  <build_depend>sensor_msgs</build_depend>
+  <depend>rosconsole</depend>
+  <depend>urdf</depend>
+  <depend>sensor_msgs</depend>
 
-  <run_depend>roscpp</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>genmsg</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>rosconsole</run_depend>
-  <run_depend>urdf</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>geomagic_description</run_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>geomagic_description</exec_depend>
 </package>
 
 
