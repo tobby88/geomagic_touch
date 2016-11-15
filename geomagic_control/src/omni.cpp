@@ -158,6 +158,8 @@ HDCallbackCode HDCALLBACK omni_state_callback(void *pUserData) {
 	hdGetDoublev(HD_CURRENT_GIMBAL_ANGLES, omni_state->rot);
 	hdGetDoublev(HD_CURRENT_POSITION, omni_state->position);
 	hdGetDoublev(HD_CURRENT_JOINT_ANGLES, omni_state->joints);
+	// BUGFIX: (because x is calibrated as 35 Degree instead of 0 degree)
+	omni_state->rot[0] -= 35.0*M_PI/180.0;
 
 	hduVector3Dd vel_buff(0, 0, 0);
 	vel_buff = (omni_state->position * 3 - 4 * omni_state->pos_hist1
