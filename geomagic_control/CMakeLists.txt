@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosconsole
   tf
   urdf
+  tapi_lib
 )
 
 add_message_files(DIRECTORY msg
@@ -29,7 +30,7 @@ generate_messages(
 
 catkin_package(
 #  INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime rosconsole tf urdf
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime rosconsole tf urdf tapi_lib
 )
 
 include_directories(

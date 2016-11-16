@@ -1,7 +1,7 @@
 tapi_geomagic_touch
 ============
 
-ROS Node for Geomagic Touch ethernet devices.
+ROS Node for Geomagic Touch ethernet devices, working with [Tapi](https://github.com/tobby88/ros-tapi-core).
 
 Device name and publish rate can be adjusted in the geomagic_headless.launch file.
 
@@ -15,6 +15,7 @@ Subscribes:
 This is based on the [package of Dane Powell](https://github.com/danepowell/phantom_omni). However, it has several advantages:
 - Compatible with Ubuntu 14.04LTS and ROS Indigo
 - Uses the more beautiful URDF model from [Francisco](https://github.com/fsuarez6/phantom_omni/tree/hydro-devel/omni_description)
+The [fork](https://github.com/HumaRobotics/geomagic_touch) was forked again ;) and is now compatible with Ubuntu 16.04LTS and ROS Kinetic. It also works with Tapi and publishes an iiwa-compatible pose.
 
 To see it in action, simply:
 roslaunch geomagic_control geomagic.launch

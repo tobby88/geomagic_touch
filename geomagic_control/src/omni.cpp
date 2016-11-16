@@ -13,9 +13,13 @@
 #include <HDU/hduVector.h>
 #include <HDU/hduMatrix.h>
 
-#include "tapi_geomagic_control/PhantomButtonEvent.h"
 #include "tapi_geomagic_control/OmniFeedback.h"
 #include <pthread.h>
+
+#include <tapi_lib/tapi_lib.hpp>
+#include <tf/transform_listener.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Bool.h>
 
 int calibrationStyle;
 
@@ -44,10 +48,14 @@ class PhantomROS {
 
 public:
 	ros::NodeHandle n;
-	ros::Publisher joint_pub;
+  ros::Publisher joint_pub;
+  ros::Publisher *button1_pub, *button2_pub;
+  ros::Publisher *pose_pub;
+  ros::Subscriber haptic_sub;
+  Tapi::Publisher *tpub;
+  tf::TransformListener listener;
+  geometry_msgs::PoseStamped pose;
 
-	ros::Publisher button_pub;
-	ros::Subscriber haptic_sub;
 	std::string omni_name;
 
 	OmniState *state;
@@ -59,14 +67,14 @@ public:
                 // Publish joint states for robot_state_publisher,
                 // and anyone else who wants them.
 		ROS_INFO("Omni name: %s", omni_name.c_str() );
-		std::ostringstream joint_topic;
+    std::ostringstream joint_topic;
 		joint_topic << omni_name << "_joint_states";
-		joint_pub = n.advertise<sensor_msgs::JointState>(joint_topic.str(), 1);
+    joint_pub = n.advertise<sensor_msgs::JointState>(joint_topic.str(), 1);
 
-		// Publish button state on NAME_button.
-		std::ostringstream button_topic;
-		button_topic << omni_name << "_button";
-		button_pub = n.advertise<tapi_geomagic_control::PhantomButtonEvent>(button_topic.str(), 100);
+    tpub = new Tapi::Publisher(&n, "Geomagic Touch");
+    button1_pub = tpub->AddFeature<std_msgs::Bool>("Grey button", 10);
+    button2_pub = tpub->AddFeature<std_msgs::Bool>("White Button", 10);
+    pose_pub = tpub->AddFeature<geometry_msgs::PoseStamped>("Pose for iiwa", 1);
 
 		// Subscribe to NAME_force_feedback.
 		std::ostringstream force_feedback_topic;
@@ -128,7 +136,7 @@ public:
 		joint_state.position[4] = -state->thetas[5] - 3*M_PI/4;
 		joint_state.name[5] = "roll";
 		joint_state.position[5] = -(-state->thetas[6] - M_PI);
-		joint_pub.publish(joint_state);
+    joint_pub.publish(joint_state);
 
 		if ((state->buttons[0] != state->buttons_prev[0])
 				or (state->buttons[1] != state->buttons_prev[1])) {
@@ -137,13 +145,41 @@ public:
 					and (state->buttons[0] == 1)) {
 				state->lock = !(state->lock);
 			}
-			tapi_geomagic_control::PhantomButtonEvent button_event;
-			button_event.grey_button = state->buttons[0];
-			button_event.white_button = state->buttons[1];
 			state->buttons_prev[0] = state->buttons[0];
 			state->buttons_prev[1] = state->buttons[1];
-			button_pub.publish(button_event);
+      std_msgs::Bool button1, button2;
+      button1.data = state->buttons[0];
+      button1_pub->publish(button1);
+      button2.data = state->buttons[1];
+      button2_pub->publish(button2);
 		}
+
+    tf::StampedTransform transform;
+    try
+    {
+      listener.lookupTransform("/base", "/stylus", ros::Time(0), transform);
+      pose.header.seq++;
+      pose.header.stamp = ros::Time::now();
+      pose.pose.position.x = 2.5*transform.getOrigin().y()+0.25;
+      pose.pose.position.y = (-2.5)*transform.getOrigin().x();
+      pose.pose.position.z = 2.5*transform.getOrigin().z()+0.1;
+      tf::Quaternion orient, orient_after;
+      orient.setX(transform.getRotation().x());
+      orient.setY(transform.getRotation().y());
+      orient.setZ(transform.getRotation().z());
+      orient.setW(transform.getRotation().w());
+      tf::Quaternion rot = tf::createQuaternionFromYaw((-90.0)*M_PI/180.0);
+      orient_after = orient * rot;
+      pose.pose.orientation.x = orient_after.x();
+      pose.pose.orientation.y = orient_after.y();
+      pose.pose.orientation.z = orient_after.z();
+      pose.pose.orientation.w = orient_after.w();
+      pose_pub->publish(pose);
+    }
+    catch (tf::TransformException ex)
+    {
+      ROS_INFO("Transformation error");
+    }
 	}
 };
 
@@ -294,6 +330,7 @@ int main(int argc, char** argv) {
 	omni_ros.init(&state);
 	hdScheduleAsynchronous(omni_state_callback, &state,
 			HD_MAX_SCHEDULER_PRIORITY);
+  sleep(2);
 
 	////////////////////////////////////////////////////////////////
 	// Loop and publish

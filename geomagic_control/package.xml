@@ -23,6 +23,7 @@
   <depend>rosconsole</depend>
   <depend>urdf</depend>
   <depend>sensor_msgs</depend>
+  <depend>tapi_lib</depend>
 
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>geomagic_description</exec_depend>
