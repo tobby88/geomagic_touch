@@ -3,9 +3,7 @@
 #include <HDU/hduMatrix.h>
 #include <HDU/hduVector.h>
 #include <HL/hl.h>
-#include <assert.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <math.h>
 #include <pthread.h>
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>

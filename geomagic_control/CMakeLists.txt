@@ -6,36 +6,30 @@ project(tapi_geomagic_control)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
   geometry_msgs
   message_generation
-  rosconsole
+  roscpp
+  std_msgs
+  tapi_lib
   tf
   urdf
-  tapi_lib
 )
 
 add_message_files(DIRECTORY msg
   FILES
-  PhantomButtonEvent.msg
   OmniFeedback.msg
 )
 
 generate_messages(
   DEPENDENCIES
-  std_msgs
   geometry_msgs
 )
 
 catkin_package(
-#  INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime rosconsole tf urdf tapi_lib
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs message_runtime tf urdf tapi_lib
 )
 
 include_directories(
-#  include
-  ${Boost_INCLUDE_DIR}
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -48,7 +42,5 @@ add_dependencies(omni ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARG
 target_link_libraries(omni
   HD
   HDU
-  rt
-  ncurses
   ${catkin_LIBRARIES}
 )
